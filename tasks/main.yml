@@ -17,10 +17,6 @@
     file: "{{ variable_file }}"
   when: variable_file | length > 0
   tags: role_qdrant_include_vars
-- name: Import repository task
-  ansible.builtin.import_tasks:
-    file: repository.yml
-  tags: role_qdrant_repository
 - name: Import dependency task
   ansible.builtin.import_tasks:
     file: dependency.yml

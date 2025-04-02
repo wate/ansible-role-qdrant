@@ -1,8 +1,9 @@
 ---
-qdrant_dependency_packages: []
-
+## -----------------
+## QdrantのGithubリポジトリ
+## -----------------
 qdrant_repo: qdrant/qdrant
 
-qdrant_home: /opt/qdrant
+qdrant_root: /opt/qdrant
 qdrant_user: qdrant
 qdrant_group: qdrant

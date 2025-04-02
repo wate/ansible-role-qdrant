@@ -1,8 +1,5 @@
 # code: language=ansible
 ---
-- name: Install qdrant dependency packages
-  ansible.builtin.apt:
-    name: "{{ qdrant_dependency_packages | default([]) }}"
 - name: Add qdrant group
   ansible.builtin.group:
     name: "{{ qdrant_group }}"
@@ -12,10 +9,14 @@
     name: "{{ qdrant_user }}"
     group: "{{ qdrant_group }}"
     system: true
-- name: Create install directory
+- name: Create qdrant directories
   ansible.builtin.file:
-    path: "{{ qdrant_home }}"
+    path: "{{ item }}"
     owner: "{{ qdrant_user }}"
     group: "{{ qdrant_group }}"
     state: directory
     mode: "0755"
+  loop:
+    - "{{ qdrant_root }}"
+    - "{{ (qdrant_root + '/' + storage.storage_path | default('./storage')) | realpath }}"
+    - "{{ (qdrant_root + '/' + storage.snapshots_path | default('./snapshots')) | realpath }}"

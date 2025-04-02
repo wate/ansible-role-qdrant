@@ -1,10 +1,10 @@
 # code: language=ansible
 ---
-# - name: Restart qdrant
-#   ansible.builtin.systemd_service:
-#     state: restarted
-#     name: qdrant
-# - name: Reload qdrant
-#   ansible.builtin.systemd_service:
-#     state: reloaded
-#     name: qdrant
+- name: Restart qdrant
+  ansible.builtin.systemd_service:
+    state: restarted
+    name: qdrant
+- name: Reload qdrant
+  ansible.builtin.systemd_service:
+    state: reloaded
+    name: qdrant

@@ -16,78 +16,86 @@
       ansible.builtin.set_fact:
         listen_tcp_posts: "{{ ansible_facts.tcp_listen | map(attribute='port') | unique | sort | list }}"
         listen_udp_posts: "{{ ansible_facts.udp_listen | map(attribute='port') | unique | sort | list }}"
-    ## リポジトリのテスト
-    # - name: Test repository
-    #   block:
-    #     - name: Check apt source setting
-    #       ansible.builtin.stat:
-    #         path: /etc/apt/sources.list.d/package.sources
-    #       register: repo_result
-    #     - name: Assert file
-    #       ansible.builtin.assert:
-    #         that:
-    #           - repo_result.stat.exists
-    # ## パッケージのテスト
-    # - name: Assert package
-    #   ansible.builtin.assert:
-    #     that:
-    #       - ansible_facts.packages['package'] is defined
-    # ## ユーザーのテスト
-    # - name: Test user
-    #   block:
-    #     - name: Check user
-    #       ansible.builtin.user:
-    #         name: www-data
-    #         system: true
-    #       check_mode: true
-    #       register: user_result
-    #     - name: Assert user
-    #       ansible.builtin.assert:
-    #         that:
-    #           - user_result is not changed
-    # ## グループのテスト
-    # - name: Test group
-    #   block:
-    #     - name: Check group
-    #       ansible.builtin.group:
-    #         name: www-data
-    #         system: true
-    #       check_mode: true
-    #       register: group_result
-    #     - name: Assert group
-    #       ansible.builtin.assert:
-    #         that:
-    #           - group_result is not changed
-    # ## ファイルのテスト
-    # - name: Test file
-    #   block:
-    #     - name: Check virtualhost setting
-    #       ansible.builtin.stat:
-    #         path: /etc/nginx/sites-available/default
-    #       register: result
-    #     - name: Assert file
-    #       ansible.builtin.assert:
-    #         that:
-    #           - result.stat.exists
-    #     - name: Check virtualhost enabled
-    #       ansible.builtin.stat:
-    #         path: /etc/nginx/sites-enabled/default
-    #       register: result
-    #     - name: Assert file
-    #       ansible.builtin.assert:
-    #         that:
-    #           - result.stat.exists
-    #           - result.stat.islnk
-    #           - result.stat.lnk_source == '/etc/nginx/sites-available/default'
+    ## パッケージのテスト
+    - name: Assert package
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.packages['qdrant'] is defined
+    ## ユーザーのテスト
+    - name: Test user
+      block:
+        - name: Check user
+          ansible.builtin.user:
+            name: qdrant
+            system: true
+          check_mode: true
+          register: user_result
+        - name: Assert user
+          ansible.builtin.assert:
+            that:
+              - user_result is not changed
+    ## グループのテスト
+    - name: Test group
+      block:
+        - name: Check group
+          ansible.builtin.group:
+            name: qdrant
+            system: true
+          check_mode: true
+          register: group_result
+        - name: Assert group
+          ansible.builtin.assert:
+            that:
+              - group_result is not changed
+    ## ファイルのテスト
+    - name: Test directory
+      block:
+        - name: Check qdrant root directory
+          ansible.builtin.stat:
+            path: /opt/qdrant
+          register: root_dir_result
+        - name: Assert root directory
+          ansible.builtin.assert:
+            that:
+              - root_dir_result.stat.exists
+              - root_dir_result.stat.isdir
+              - root_dir_result.stat.mode == '0755'
+              - root_dir_result.stat.pw_name == 'qdrant'
+              - root_dir_result.stat.gr_name == 'qdrant'
+        - name: Check qdrant storage directory
+          ansible.builtin.stat:
+            path: /opt/qdrant/storage
+          register: storage_dir_result
+        - name: Assert storage directory
+          ansible.builtin.assert:
+            that:
+              - storage_dir_result.stat.exists
+              - storage_dir_result.stat.isdir
+              - storage_dir_result.stat.mode == '0755'
+              - storage_dir_result.stat.pw_name == 'qdrant'
+              - storage_dir_result.stat.gr_name == 'qdrant'
+        - name: Check qdrant snapshots directory
+          ansible.builtin.stat:
+            path: /opt/qdrant/snapshots
+          register: snapshots_dir_result
+        - name: Assert snapshots directory
+          ansible.builtin.assert:
+            that:
+              - snapshots_dir_result.stat.exists
+              - snapshots_dir_result.stat.isdir
+              - snapshots_dir_result.stat.mode == '0755'
+              - snapshots_dir_result.stat.pw_name == 'qdrant'
+              - snapshots_dir_result.stat.gr_name == 'qdrant'
     ## サービスのテスト
-    # - name: Assert service
-    #   ansible.builtin.assert:
-    #     that:
-    #       - ansible_facts.services['package.service'] is defined
-    #       - ansible_facts.services['package.service']['state'] == 'running'
-    #       - ansible_facts.services['package.service']['status'] == 'enabled'
-    # ## 待受ポートのテスト
-    # - name: Assert listen port
-    #   ansible.builtin.assert:
-    #     that:
-    #       - 123456 in listen_tcp_posts
+    - name: Assert service
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['qdrant.service'] is defined
+          - ansible_facts.services['qdrant.service']['state'] == 'running'
+          - ansible_facts.services['qdrant.service']['status'] == 'enabled'
+    ## 待受ポートのテスト
+    - name: Assert listen port
+      ansible.builtin.assert:
+        that:
+          - 6333 in listen_tcp_posts
+          - 6334 in listen_tcp_posts

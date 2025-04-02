@@ -5,13 +5,25 @@
     src: qdrant.service.j2
     dest: /lib/systemd/system/qdrant.service
     mode: "0644"
-  notify: restart qdrant
+  notify: Restart qdrant
 - name: Service qdrant is active and enabled on system startup
   ansible.builtin.systemd_service:
     name: qdrant
     state: started
     enabled: true
-# - name: allow qdrant port
-#   community.general.ufw:
-#     rule: allow
-#     port: "123456"
+    daemon_reload: true
+- name: Allow qdrant port
+  when: qdrant_allow_connect_other_host is defined
+  block:
+    - name: Allow qdrant http port
+      community.general.ufw:
+        rule: allow
+        port: "{{ qdrant_http_port }}"
+        from_ip: "{{ qdrant_allow_connect_other_host | default('any') }}"
+      when: qdrant_http_port
+    - name: Allow qdrant gRPC port
+      community.general.ufw:
+        rule: allow
+        port: "{{ qdrant_grpc_port }}"
+        from_ip: "{{ qdrant_allow_connect_other_host | default('any') }}"
+      when: qdrant_grpc_port

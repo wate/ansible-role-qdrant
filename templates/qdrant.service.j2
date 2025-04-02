@@ -1,0 +1,17 @@
+# ------------------------
+# {{ ansible_managed }}
+# ------------------------
+[Unit]
+Description=qdrant
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory={{ qdrant_root }}
+User={{ qdrant_user }}
+Group={{ qdrant_group }}
+ExecStart=/usr/bin/qdrant
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
