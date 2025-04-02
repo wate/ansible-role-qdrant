@@ -1,0 +1,11 @@
+---
+## -----------------
+## インストールするバージョン
+## -----------------
+qdrant_version: latest
+
+## -----------------
+## Qdrantの設定
+## @see https://qdrant.tech/documentation/guides/configuration/
+## -----------------
+qdrant_cfg: {}

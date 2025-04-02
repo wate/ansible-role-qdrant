@@ -1,0 +1,17 @@
+[Unit]
+Description=Sample
+# Requires=network.service
+# After=network.target
+
+[Service]
+Type=simple
+# EnvironmentFile=/etc/default/sample
+# Environment=VAR_NAME=VAR_VALUE
+# WorkingDirectory={{ app_root }}
+# User=user
+# Group=group
+ExecStart={{ role_root }}/bin/app.js
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+---
+qdrant_dependency_packages: []
+
+qdrant_repo: qdrant/qdrant
+
+qdrant_home: /opt/qdrant
+qdrant_user: qdrant
+qdrant_group: qdrant

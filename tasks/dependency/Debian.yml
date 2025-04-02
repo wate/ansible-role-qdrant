@@ -1,0 +1,21 @@
+# code: language=ansible
+---
+- name: Install qdrant dependency packages
+  ansible.builtin.apt:
+    name: "{{ qdrant_dependency_packages | default([]) }}"
+- name: Add qdrant group
+  ansible.builtin.group:
+    name: "{{ qdrant_group }}"
+    system: true
+- name: Add qdrant user
+  ansible.builtin.user:
+    name: "{{ qdrant_user }}"
+    group: "{{ qdrant_group }}"
+    system: true
+- name: Create install directory
+  ansible.builtin.file:
+    path: "{{ qdrant_home }}"
+    owner: "{{ qdrant_user }}"
+    group: "{{ qdrant_group }}"
+    state: directory
+    mode: "0755"
