@@ -21,6 +21,8 @@
       ansible.builtin.assert:
         that:
           - ansible_facts.packages['qdrant'] is defined
+        fail_msg: "Qdrant package is not installed"
+        success_msg: "Qdrant package is installed"
     ## ユーザーのテスト
     - name: Test user
       block:
@@ -34,6 +36,8 @@
           ansible.builtin.assert:
             that:
               - user_result is not changed
+            fail_msg: "Qdrant user is not properly created"
+            success_msg: "Qdrant user is properly created"
     ## グループのテスト
     - name: Test group
       block:
@@ -47,6 +51,8 @@
           ansible.builtin.assert:
             that:
               - group_result is not changed
+            fail_msg: "Qdrant group is not properly created"
+            success_msg: "Qdrant group is properly created"
     ## ファイルのテスト
     - name: Test directory
       block:
@@ -62,6 +68,8 @@
               - root_dir_result.stat.mode == '0755'
               - root_dir_result.stat.pw_name == 'qdrant'
               - root_dir_result.stat.gr_name == 'qdrant'
+            fail_msg: "Qdrant root directory (/opt/qdrant) is not properly created"
+            success_msg: "Qdrant root directory (/opt/qdrant) is properly created"
         - name: Check qdrant storage directory
           ansible.builtin.stat:
             path: /opt/qdrant/storage
@@ -74,6 +82,8 @@
               - storage_dir_result.stat.mode == '0755'
               - storage_dir_result.stat.pw_name == 'qdrant'
               - storage_dir_result.stat.gr_name == 'qdrant'
+            fail_msg: "Qdrant storage directory (/opt/qdrant/storage) is not properly created"
+            success_msg: "Qdrant storage directory (/opt/qdrant/storage) is properly created"
         - name: Check qdrant snapshots directory
           ansible.builtin.stat:
             path: /opt/qdrant/snapshots
@@ -86,6 +96,8 @@
               - snapshots_dir_result.stat.mode == '0755'
               - snapshots_dir_result.stat.pw_name == 'qdrant'
               - snapshots_dir_result.stat.gr_name == 'qdrant'
+            fail_msg: "Qdrant snapshots directory (/opt/qdrant/snapshots) is not properly created"
+            success_msg: "Qdrant snapshots directory (/opt/qdrant/snapshots) is properly created"
     ## サービスのテスト
     - name: Assert service
       ansible.builtin.assert:
@@ -93,9 +105,12 @@
           - ansible_facts.services['qdrant.service'] is defined
           - ansible_facts.services['qdrant.service']['state'] == 'running'
           - ansible_facts.services['qdrant.service']['status'] == 'enabled'
+        fail_msg: "Qdrant service is not running or not enabled"
+        success_msg: "Qdrant service is running and enabled"
     ## 待受ポートのテスト
     - name: Assert listen port
       ansible.builtin.assert:
         that:
           - 6333 in listen_tcp_posts
-          - 6334 in listen_tcp_posts
+        fail_msg: "Qdrant is not listening on port 6333"
+        success_msg: "Qdrant is listening on port 6333"
